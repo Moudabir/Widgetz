@@ -1,191 +1,362 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Idea Capture Widget</title>
+  <title>Enhanced Idea Capture Widget</title>
   <style>
+    :root {
+      --bg-color: #f8f8f8;
+      --text-color: #333;
+      --card-bg: white;
+      --border-color: #e0e0e0;
+      --input-bg: white;
+      --input-border: #ddd;
+      --btn-bg: #0066cc;
+      --btn-hover: #0052a3;
+      --secondary-btn-bg: white;
+      --secondary-btn-border: #ddd;
+      --secondary-btn-hover: #f5f5f5;
+      --filter-btn-border: #ddd;
+      --filter-btn-hover: #0066cc;
+      --delete-color: #999;
+      --delete-hover: #d32f2f;
+      --empty-color: #999;
+      --badge-task-bg: #e3f2fd;
+      --badge-task-color: #1565c0;
+      --badge-idea-bg: #f3e5f5;
+      --badge-idea-color: #6a1b9a;
+      --badge-note-bg: #e0f2f1;
+      --badge-note-color: #00695c;
+      --badge-reminder-bg: #fff3e0;
+      --badge-reminder-color: #e65100;
+      --completed-color: #4caf50;
+      --completed-bg: #e8f5e8;
+      --checkbox-bg: #fff;
+      --checkbox-border: #ddd;
+    }
+
+    [data-theme="dark"] {
+      --bg-color: #1a1a1a;
+      --text-color: #e0e0e0;
+      --card-bg: #2d2d2d;
+      --border-color: #404040;
+      --input-bg: #3d3d3d;
+      --input-border: #555;
+      --btn-bg: #0d7df7;
+      --btn-hover: #0a5ac7;
+      --secondary-btn-bg: #3d3d3d;
+      --secondary-btn-border: #555;
+      --secondary-btn-hover: #454545;
+      --filter-btn-border: #555;
+      --filter-btn-hover: #0d7df7;
+      --delete-color: #888;
+      --delete-hover: #f44336;
+      --empty-color: #888;
+      --badge-task-bg: #1e3a5f;
+      --badge-task-color: #64b5f6;
+      --badge-idea-bg: #4a148c;
+      --badge-idea-color: #ba68c8;
+      --badge-note-bg: #004d40;
+      --badge-note-color: #4db6ac;
+      --badge-reminder-bg: #e65100;
+      --badge-reminder-color: #ffb74d;
+      --completed-color: #66bb6a;
+      --completed-bg: #2e4d32;
+      --checkbox-bg: #3d3d3d;
+      --checkbox-border: #555;
+    }
+
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-    
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
-      background: #f8f8f8;
-      color: #333;
+      background: var(--bg-color);
+      color: var(--text-color);
       line-height: 1.6;
+      transition: background-color 0.3s, color 0.3s;
     }
-    
+
     .container {
-      max-width: 700px;
+      max-width: 900px;
       margin: 0 auto;
       padding: 2rem 1rem;
     }
-    
+
     .header {
       margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-    
+
     h1 {
       font-size: 28px;
       margin-bottom: 1rem;
-      color: #222;
+      color: var(--text-color);
     }
-    
+
+    .theme-toggle {
+      background: var(--secondary-btn-bg);
+      border: 1px solid var(--secondary-btn-border);
+      color: var(--text-color);
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .theme-toggle:hover {
+      background: var(--secondary-btn-hover);
+    }
+
     .stats-row {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
       gap: 12px;
       margin-bottom: 2rem;
     }
-    
+
     .stat-card {
-      background: white;
+      background: var(--card-bg);
       padding: 1rem;
       border-radius: 8px;
-      border: 1px solid #e0e0e0;
+      border: 1px solid var(--border-color);
       text-align: center;
+      transition: all 0.3s;
     }
-    
+
     .stat-number {
       font-size: 24px;
       font-weight: 600;
-      color: #222;
+      color: var(--text-color);
       margin-bottom: 4px;
     }
-    
+
     .stat-label {
       font-size: 12px;
-      color: #666;
+      color: var(--empty-color);
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
-    
+
     .input-section {
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      gap: 10px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1.5rem;
       margin-bottom: 1.5rem;
     }
-    
+
+    .input-group {
+      margin-bottom: 1rem;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text-color);
+    }
+
     input[type="text"],
+    textarea,
     select {
+      width: 100%;
       padding: 12px;
       font-size: 14px;
-      border: 1px solid #ddd;
+      border: 1px solid var(--input-border);
       border-radius: 6px;
-      background: white;
-      color: #333;
+      background: var(--input-bg);
+      color: var(--text-color);
       font-family: inherit;
+      transition: border-color 0.3s;
     }
-    
+
     input[type="text"]:focus,
+    textarea:focus,
     select:focus {
       outline: none;
-      border-color: #0066cc;
+      border-color: var(--btn-bg);
       box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
     }
-    
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .details-toggle {
+      background: var(--secondary-btn-bg);
+      border: 1px solid var(--secondary-btn-border);
+      color: var(--text-color);
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    .details-toggle:hover {
+      background: var(--secondary-btn-hover);
+    }
+
+    .details-section {
+      display: none;
+      margin-top: 1rem;
+    }
+
+    .details-section.show {
+      display: block;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+    }
+
+    .input-row select {
+      flex: 0 0 150px;
+    }
+
+    .input-row button {
+      flex: 0 0 auto;
+    }
+
     button {
       padding: 10px 16px;
       font-size: 13px;
       font-weight: 600;
-      background: #0066cc;
+      background: var(--btn-bg);
       color: white;
       border: none;
       border-radius: 6px;
       cursor: pointer;
       transition: all 150ms;
     }
-    
+
     button:hover {
-      background: #0052a3;
+      background: var(--btn-hover);
       transform: translateY(-1px);
       box-shadow: 0 2px 8px rgba(0, 102, 204, 0.2);
     }
-    
+
     button:active {
       transform: translateY(0);
     }
-    
+
     .secondary-btn {
-      background: white;
-      color: #333;
-      border: 1px solid #ddd;
+      background: var(--secondary-btn-bg);
+      color: var(--text-color);
+      border: 1px solid var(--secondary-btn-border);
     }
-    
+
     .secondary-btn:hover {
-      background: #f5f5f5;
-      border-color: #bbb;
+      background: var(--secondary-btn-hover);
+      border-color: var(--border-color);
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
-    
+
+    .view-controls {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .view-btn {
+      padding: 8px 14px;
+      font-size: 12px;
+      border: 1px solid var(--filter-btn-border);
+      background: var(--secondary-btn-bg);
+      color: var(--text-color);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 150ms;
+      font-weight: 500;
+    }
+
+    .view-btn:hover {
+      border-color: var(--filter-btn-hover);
+      color: var(--filter-btn-hover);
+    }
+
+    .view-btn.active {
+      background: var(--btn-bg);
+      border-color: var(--btn-bg);
+      color: white;
+    }
+
     .export-controls {
       display: flex;
       gap: 8px;
       margin-bottom: 1.5rem;
       flex-wrap: wrap;
     }
-    
+
     .export-controls button {
       padding: 8px 12px;
       font-size: 12px;
     }
-    
+
     .filter-section {
       margin-bottom: 2rem;
     }
-    
+
     .filter-label {
       font-size: 12px;
-      color: #666;
+      color: var(--empty-color);
       display: block;
       margin-bottom: 10px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       font-weight: 600;
     }
-    
+
     .filter-controls {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
     }
-    
+
     .filter-btn {
       padding: 8px 14px;
       font-size: 12px;
-      border: 1px solid #ddd;
-      background: white;
-      color: #333;
+      border: 1px solid var(--filter-btn-border);
+      background: var(--secondary-btn-bg);
+      color: var(--text-color);
       border-radius: 6px;
       cursor: pointer;
       transition: all 150ms;
       font-weight: 500;
     }
-    
+
     .filter-btn:hover {
-      border-color: #0066cc;
-      color: #0066cc;
+      border-color: var(--filter-btn-hover);
+      color: var(--filter-btn-hover);
     }
-    
+
     .filter-btn.active {
-      background: #0066cc;
-      border-color: #0066cc;
+      background: var(--btn-bg);
+      border-color: var(--btn-bg);
       color: white;
     }
-    
+
     .ideas-list {
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
-    
+
     .idea-item {
-      background: white;
-      border: 1px solid #e0e0e0;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
       border-radius: 8px;
       padding: 14px;
       display: flex;
@@ -195,12 +366,22 @@
       animation: slideIn 200ms ease-out;
       transition: all 150ms;
     }
-    
+
     .idea-item:hover {
-      border-color: #ccc;
+      border-color: var(--border-color);
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     }
-    
+
+    .idea-item.completed {
+      background: var(--completed-bg);
+      border-color: var(--completed-color);
+    }
+
+    .idea-item.completed .idea-text {
+      text-decoration: line-through;
+      opacity: 0.7;
+    }
+
     @keyframes slideIn {
       from {
         opacity: 0;
@@ -211,27 +392,49 @@
         transform: translateY(0);
       }
     }
-    
+
     .idea-content {
       flex: 1;
       min-width: 0;
     }
-    
+
+    .idea-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-color);
+      margin-bottom: 8px;
+      word-wrap: break-word;
+    }
+
     .idea-text {
       font-size: 14px;
-      color: #222;
+      color: var(--text-color);
       line-height: 1.6;
       margin-bottom: 8px;
       word-wrap: break-word;
     }
-    
+
+    .idea-details {
+      font-size: 13px;
+      color: var(--empty-color);
+      line-height: 1.5;
+      margin-bottom: 8px;
+      word-wrap: break-word;
+      display: none;
+    }
+
+    .idea-details.show {
+      display: block;
+    }
+
     .idea-meta {
       display: flex;
       gap: 8px;
       align-items: center;
       font-size: 12px;
+      flex-wrap: wrap;
     }
-    
+
     .category-badge {
       padding: 4px 10px;
       border-radius: 4px;
@@ -239,96 +442,234 @@
       text-transform: uppercase;
       letter-spacing: 0.3px;
     }
-    
+
     .badge-task {
-      background: #e3f2fd;
-      color: #1565c0;
+      background: var(--badge-task-bg);
+      color: var(--badge-task-color);
     }
-    
+
     .badge-idea {
-      background: #f3e5f5;
-      color: #6a1b9a;
+      background: var(--badge-idea-bg);
+      color: var(--badge-idea-color);
     }
-    
+
     .badge-note {
-      background: #e0f2f1;
-      color: #00695c;
+      background: var(--badge-note-bg);
+      color: var(--badge-note-color);
     }
-    
+
     .badge-reminder {
-      background: #fff3e0;
-      color: #e65100;
+      background: var(--badge-reminder-bg);
+      color: var(--badge-reminder-color);
     }
-    
+
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-right: 12px;
+    }
+
+    .checkbox {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--checkbox-border);
+      border-radius: 4px;
+      background: var(--checkbox-bg);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .checkbox.checked {
+      background: var(--completed-color);
+      border-color: var(--completed-color);
+    }
+
+    .checkbox.checked::after {
+      content: '✓';
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .timestamp {
+      color: var(--empty-color);
+      font-size: 11px;
+    }
+
+    .item-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .expand-btn,
     .delete-btn {
       background: none;
       border: none;
-      color: #999;
+      color: var(--delete-color);
       cursor: pointer;
       padding: 4px 8px;
-      font-size: 18px;
+      font-size: 14px;
       transition: color 150ms;
       flex-shrink: 0;
     }
-    
+
+    .expand-btn:hover,
     .delete-btn:hover {
-      color: #d32f2f;
+      color: var(--delete-hover);
     }
-    
+
     .empty-state {
       text-align: center;
       padding: 3rem 1rem;
-      color: #999;
+      color: var(--empty-color);
       font-size: 14px;
+    }
+
+    /* Gallery View */
+    .gallery-view .ideas-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+
+    .gallery-view .idea-item {
+      flex-direction: column;
+      padding: 16px;
+    }
+
+    .gallery-view .item-actions {
+      align-self: flex-end;
+      margin-top: 12px;
+    }
+
+    /* Database View */
+    .database-view .ideas-list {
+      display: block;
+    }
+
+    .database-view .idea-item {
+      display: table-row;
+      padding: 12px;
+    }
+
+    .database-view .idea-item > * {
+      display: table-cell;
+      padding: 8px 12px;
+      vertical-align: top;
+    }
+
+    .database-view .idea-content {
+      display: table-cell;
+      width: 40%;
+    }
+
+    .database-view .idea-meta {
+      display: table-cell;
+      width: 30%;
+    }
+
+    .database-view .item-actions {
+      display: table-cell;
+      width: 10%;
+      text-align: right;
+    }
+
+    .database-header {
+      display: none;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px 8px 0 0;
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--empty-color);
+    }
+
+    .database-view .database-header {
+      display: table-row;
+    }
+
+    .database-view .database-header > div {
+      display: table-cell;
+      padding: 12px;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <h1>Quick Idea Capture</h1>
-      
-      <div class="stats-row">
-        <div class="stat-card">
-          <div class="stat-number" id="count-total">0</div>
-          <div class="stat-label">Total</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number" id="count-task">0</div>
-          <div class="stat-label">Tasks</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number" id="count-idea">0</div>
-          <div class="stat-label">Ideas</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number" id="count-note">0</div>
-          <div class="stat-label">Notes</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number" id="count-reminder">0</div>
-          <div class="stat-label">Reminders</div>
-        </div>
+      <h1>Enhanced Idea Capture</h1>
+      <button class="theme-toggle" id="theme-toggle">🌙 Dark Mode</button>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-number" id="count-total">0</div>
+        <div class="stat-label">Total</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="count-task">0</div>
+        <div class="stat-label">Tasks</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="count-idea">0</div>
+        <div class="stat-label">Ideas</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="count-note">0</div>
+        <div class="stat-label">Notes</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="count-reminder">0</div>
+        <div class="stat-label">Reminders</div>
       </div>
     </div>
-    
+
     <div class="input-section">
-      <input type="text" id="idea-input" placeholder="Add a new item..." />
-      <select id="category-select">
-        <option value="task">Task</option>
-        <option value="idea">Idea</option>
-        <option value="note">Note</option>
-        <option value="reminder">Reminder</option>
-      </select>
-      <button id="add-btn">Add</button>
+      <div class="input-group">
+        <label for="title-input">Title / Quick Note</label>
+        <input type="text" id="title-input" placeholder="Enter a title or quick note..." />
+      </div>
+
+      <button class="details-toggle" id="details-toggle">+ Add Details</button>
+
+      <div class="details-section" id="details-section">
+        <div class="input-group">
+          <label for="details-input">Additional Details (Optional)</label>
+          <textarea id="details-input" placeholder="Add more detailed information..."></textarea>
+        </div>
+      </div>
+
+      <div class="input-row">
+        <select id="category-select">
+          <option value="task">Task</option>
+          <option value="idea">Idea</option>
+          <option value="note">Note</option>
+          <option value="reminder">Reminder</option>
+        </select>
+        <button id="add-btn">Add Item</button>
+      </div>
     </div>
-    
+
+    <div class="view-controls">
+      <span class="filter-label" style="margin-bottom: 0;">View:</span>
+      <button class="view-btn active" data-view="list">📋 List</button>
+      <button class="view-btn" data-view="gallery">📸 Gallery</button>
+      <button class="view-btn" data-view="database">📊 Database</button>
+    </div>
+
     <div class="export-controls">
       <button class="secondary-btn" id="copy-btn">📋 Copy JSON</button>
       <button class="secondary-btn" id="csv-btn">📊 Export CSV</button>
       <button class="secondary-btn" id="clear-btn">🗑️ Clear All</button>
     </div>
-    
+
     <div class="filter-section">
       <span class="filter-label">Filter by category</span>
       <div class="filter-controls">
@@ -339,13 +680,21 @@
         <button class="filter-btn" data-filter="reminder">Reminders</button>
       </div>
     </div>
-    
+
+    <div class="database-header">
+      <div>Title</div>
+      <div>Details</div>
+      <div>Category & Date</div>
+      <div>Actions</div>
+    </div>
+
     <div id="ideas-container" class="ideas-list"></div>
     <div id="empty-msg" class="empty-state">No items yet. Add one to get started!</div>
   </div>
 
   <script>
-    const input = document.getElementById('idea-input');
+    const titleInput = document.getElementById('title-input');
+    const detailsInput = document.getElementById('details-input');
     const categorySelect = document.getElementById('category-select');
     const addBtn = document.getElementById('add-btn');
     const container = document.getElementById('ideas-container');
@@ -353,10 +702,33 @@
     const copyBtn = document.getElementById('copy-btn');
     const csvBtn = document.getElementById('csv-btn');
     const clearBtn = document.getElementById('clear-btn');
-    
-    let ideas = JSON.parse(localStorage.getItem('ideas-enhanced') || '[]');
+    const themeToggle = document.getElementById('theme-toggle');
+    const detailsToggle = document.getElementById('details-toggle');
+    const detailsSection = document.getElementById('details-section');
+
+    let ideas = JSON.parse(localStorage.getItem('ideas-enhanced-v2') || '[]');
     let activeFilter = 'all';
-    
+    let activeView = 'list';
+
+    // Theme toggle
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    themeToggle.textContent = currentTheme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
+
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      themeToggle.textContent = newTheme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
+    });
+
+    // Details toggle
+    detailsToggle.addEventListener('click', () => {
+      detailsSection.classList.toggle('show');
+      detailsToggle.textContent = detailsSection.classList.contains('show') ? '- Hide Details' : '+ Add Details';
+    });
+
     function updateStats() {
       const total = ideas.length;
       const byCategory = {
@@ -365,14 +737,14 @@
         note: ideas.filter(i => i.category === 'note').length,
         reminder: ideas.filter(i => i.category === 'reminder').length
       };
-      
+
       document.getElementById('count-total').textContent = total;
       document.getElementById('count-task').textContent = byCategory.task;
       document.getElementById('count-idea').textContent = byCategory.idea;
       document.getElementById('count-note').textContent = byCategory.note;
       document.getElementById('count-reminder').textContent = byCategory.reminder;
     }
-    
+
     function getCategoryBadgeClass(cat) {
       const map = {
         task: 'badge-task',
@@ -382,69 +754,157 @@
       };
       return map[cat] || 'badge-idea';
     }
-    
+
+    function formatTimestamp(timestamp) {
+      const date = new Date(timestamp);
+      const dateStr = date.toLocaleDateString();
+      const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      return `${dateStr} ${timeStr}`;
+    }
+
     function renderIdeas() {
       container.innerHTML = '';
+      container.className = `ideas-list ${activeView}-view`;
+
       const filtered = activeFilter === 'all'
         ? ideas
         : ideas.filter(i => i.category === activeFilter);
-      
+
       filtered.forEach((idea) => {
         const realIdx = ideas.indexOf(idea);
         const div = document.createElement('div');
-        div.className = 'idea-item';
+        div.className = `idea-item ${idea.completed ? 'completed' : ''}`;
+
+        const hasDetails = idea.details && idea.details.trim();
         const catLabel = idea.category.charAt(0).toUpperCase() + idea.category.slice(1);
-        
-        div.innerHTML = `
-          <div class="idea-content">
-            <div class="idea-text">${escapeHtml(idea.text)}</div>
+
+        if (activeView === 'list') {
+          div.innerHTML = `
+            ${idea.category === 'task' ? `
+              <div class="checkbox-container">
+                <div class="checkbox ${idea.completed ? 'checked' : ''}" onclick="toggleComplete(${realIdx})"></div>
+              </div>
+            ` : ''}
+            <div class="idea-content">
+              <div class="idea-title">${escapeHtml(idea.title)}</div>
+              ${idea.text ? `<div class="idea-text">${escapeHtml(idea.text)}</div>` : ''}
+              ${hasDetails ? `<div class="idea-details ${idea.expanded ? 'show' : ''}">${escapeHtml(idea.details)}</div>` : ''}
+              <div class="idea-meta">
+                <span class="category-badge ${getCategoryBadgeClass(idea.category)}">${catLabel}</span>
+                <span class="timestamp">${formatTimestamp(idea.timestamp)}</span>
+              </div>
+            </div>
+            <div class="item-actions">
+              ${hasDetails ? `<button class="expand-btn" onclick="toggleExpand(${realIdx})" title="Toggle Details">${idea.expanded ? '−' : '+'}</button>` : ''}
+              <button class="delete-btn" onclick="deleteIdea(${realIdx})" title="Delete">×</button>
+            </div>
+          `;
+        } else if (activeView === 'gallery') {
+          div.innerHTML = `
+            <div class="idea-content">
+              <div class="idea-title">${escapeHtml(idea.title)}</div>
+              ${idea.text ? `<div class="idea-text">${escapeHtml(idea.text)}</div>` : ''}
+              ${hasDetails ? `<div class="idea-details ${idea.expanded ? 'show' : ''}">${escapeHtml(idea.details)}</div>` : ''}
+              <div class="idea-meta">
+                <span class="category-badge ${getCategoryBadgeClass(idea.category)}">${catLabel}</span>
+                <span class="timestamp">${formatTimestamp(idea.timestamp)}</span>
+              </div>
+            </div>
+            <div class="item-actions">
+              ${idea.category === 'task' ? `<div class="checkbox ${idea.completed ? 'checked' : ''}" onclick="toggleComplete(${realIdx})" style="margin-right: 8px;"></div>` : ''}
+              ${hasDetails ? `<button class="expand-btn" onclick="toggleExpand(${realIdx})" title="Toggle Details">${idea.expanded ? '−' : '+'}</button>` : ''}
+              <button class="delete-btn" onclick="deleteIdea(${realIdx})" title="Delete">×</button>
+            </div>
+          `;
+        } else if (activeView === 'database') {
+          div.innerHTML = `
+            <div class="idea-content">
+              <div class="idea-title">${escapeHtml(idea.title)}</div>
+              ${idea.text ? `<div class="idea-text">${escapeHtml(idea.text)}</div>` : ''}
+            </div>
+            <div class="idea-details ${idea.expanded ? 'show' : ''}">${hasDetails ? escapeHtml(idea.details) : ''}</div>
             <div class="idea-meta">
               <span class="category-badge ${getCategoryBadgeClass(idea.category)}">${catLabel}</span>
-              <span style="color: #999; font-size: 11px;">${new Date(idea.timestamp).toLocaleDateString()}</span>
+              <span class="timestamp">${formatTimestamp(idea.timestamp)}</span>
             </div>
-          </div>
-          <button class="delete-btn" onclick="deleteIdea(${realIdx})" title="Delete">×</button>
-        `;
-        
+            <div class="item-actions">
+              ${idea.category === 'task' ? `<div class="checkbox ${idea.completed ? 'checked' : ''}" onclick="toggleComplete(${realIdx})" style="display: inline-block; margin-right: 8px;"></div>` : ''}
+              ${hasDetails ? `<button class="expand-btn" onclick="toggleExpand(${realIdx})" title="Toggle Details">${idea.expanded ? '−' : '+'}</button>` : ''}
+              <button class="delete-btn" onclick="deleteIdea(${realIdx})" title="Delete">×</button>
+            </div>
+          `;
+        }
+
         container.appendChild(div);
       });
-      
+
       emptyMsg.style.display = filtered.length === 0 ? 'block' : 'none';
       updateStats();
     }
-    
+
     function escapeHtml(text) {
       const div = document.createElement('div');
       div.textContent = text;
       return div.innerHTML;
     }
-    
+
     window.deleteIdea = function(idx) {
       ideas.splice(idx, 1);
-      localStorage.setItem('ideas-enhanced', JSON.stringify(ideas));
+      localStorage.setItem('ideas-enhanced-v2', JSON.stringify(ideas));
       renderIdeas();
     };
-    
+
+    window.toggleComplete = function(idx) {
+      ideas[idx].completed = !ideas[idx].completed;
+      localStorage.setItem('ideas-enhanced-v2', JSON.stringify(ideas));
+      renderIdeas();
+    };
+
+    window.toggleExpand = function(idx) {
+      ideas[idx].expanded = !ideas[idx].expanded;
+      localStorage.setItem('ideas-enhanced-v2', JSON.stringify(ideas));
+      renderIdeas();
+    };
+
     function addIdea() {
-      const text = input.value.trim();
-      if (text) {
+      const title = titleInput.value.trim();
+      const text = detailsInput.value.trim();
+      if (title) {
         ideas.unshift({
-          text,
+          title,
+          text: text || '',
+          details: detailsInput.value.trim() || '',
           category: categorySelect.value,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
+          completed: false,
+          expanded: false
         });
-        localStorage.setItem('ideas-enhanced', JSON.stringify(ideas));
-        input.value = '';
-        input.focus();
+        localStorage.setItem('ideas-enhanced-v2', JSON.stringify(ideas));
+        titleInput.value = '';
+        detailsInput.value = '';
+        detailsSection.classList.remove('show');
+        detailsToggle.textContent = '+ Add Details';
+        titleInput.focus();
         renderIdeas();
       }
     }
-    
+
     addBtn.addEventListener('click', addIdea);
-    input.addEventListener('keypress', (e) => {
+    titleInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') addIdea();
     });
-    
+
+    // View controls
+    document.querySelectorAll('.view-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeView = btn.dataset.view;
+        renderIdeas();
+      });
+    });
+
+    // Filter controls
     document.querySelectorAll('.filter-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -453,7 +913,7 @@
         renderIdeas();
       });
     });
-    
+
     copyBtn.addEventListener('click', () => {
       const json = JSON.stringify(ideas, null, 2);
       navigator.clipboard.writeText(json).then(() => {
@@ -466,29 +926,31 @@
         alert('Failed to copy. Check browser permissions.');
       });
     });
-    
+
     csvBtn.addEventListener('click', () => {
-      const headers = 'Text,Category,Date\n';
+      const headers = 'Title,Text,Details,Category,Date,Completed\n';
       const rows = ideas.map(i => {
-        const text = i.text.replace(/"/g, '""');
-        const date = new Date(i.timestamp).toLocaleDateString();
-        return `"${text}","${i.category}","${date}"`;
+        const title = i.title.replace(/"/g, '""');
+        const text = (i.text || '').replace(/"/g, '""');
+        const details = (i.details || '').replace(/"/g, '""');
+        const date = formatTimestamp(i.timestamp);
+        return `"${title}","${text}","${details}","${i.category}","${date}","${i.completed ? 'Yes' : 'No'}"`;
       }).join('\n');
-      
+
       const csv = headers + rows;
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
       const url = URL.createObjectURL(blob);
-      
+
       link.setAttribute('href', url);
       link.setAttribute('download', `ideas-${new Date().toISOString().split('T')[0]}.csv`);
       link.style.visibility = 'hidden';
-      
+
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     });
-    
+
     clearBtn.addEventListener('click', () => {
       if (ideas.length === 0) {
         alert('No ideas to clear!');
@@ -496,11 +958,11 @@
       }
       if (confirm(`Delete all ${ideas.length} items? This cannot be undone.`)) {
         ideas = [];
-        localStorage.setItem('ideas-enhanced', JSON.stringify(ideas));
+        localStorage.setItem('ideas-enhanced-v2', JSON.stringify(ideas));
         renderIdeas();
       }
     });
-    
+
     renderIdeas();
   </script>
 </body>
