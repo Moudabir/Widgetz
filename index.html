@@ -243,7 +243,6 @@
 
     button:hover {
       background: var(--btn-hover);
-      transform: translateY(-1px);
       box-shadow: 0 2px 8px rgba(0, 102, 204, 0.2);
     }
 
@@ -529,24 +528,6 @@
       color: var(--empty-color);
       font-size: 14px;
     }
-
-    /* Gallery View */
-    .gallery-view .ideas-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 16px;
-    }
-
-    .gallery-view .idea-item {
-      flex-direction: column;
-      padding: 16px;
-    }
-
-    .gallery-view .item-actions {
-      align-self: flex-end;
-      margin-top: 12px;
-    }
-
     /* Database View */
     .database-view .ideas-list {
       display: block;
@@ -622,9 +603,9 @@
     }
 
     [data-theme="dark"] {
-      --bg-color: #0b0f15;
-      --card-bg: #0f1720;
-      --text-color: #e6eef8;
+      --bg-color: #1a1a1a;
+      --card-bg: #2d2d2d;
+      --text-color: #e0e0e0;
       --muted: #9aa6b2;
       --border-color: #1f2937;
       --accent: #3aa0ff;
@@ -679,8 +660,8 @@
     input:focus-visible, textarea:focus-visible, select:focus-visible { outline:none; box-shadow:var(--ring); border-color:var(--accent); }
 
     /* Buttons */
-    button { appearance:none; -webkit-appearance:none; border:none; background:var(--accent); color:white; padding:8px 12px; border-radius:10px; cursor:pointer; display:inline-flex; align-items:center; gap:8px; font-weight:600; box-shadow:var(--shadow-1); transition:transform .14s ease, box-shadow .14s ease, background-color .14s ease; }
-    button:hover { transform:translateY(-3px); box-shadow:var(--shadow-2); }
+    button { appearance:none; -webkit-appearance:none; border:none; background:var(--accent); color:white; padding:8px 12px; border-radius:10px; cursor:pointer; display:inline-flex; align-items:center; gap:8px; font-weight:600; box-shadow:var(--shadow-1); transition:box-shadow .14s ease, background-color .14s ease; }
+    button:hover { box-shadow:var(--shadow-2); }
     button:focus-visible { outline:none; box-shadow:var(--ring); }
 
     .secondary-btn, .details-toggle, .view-btn, .filter-btn { background:transparent; color:var(--text-color); border:1px solid var(--border-color); padding:8px 10px; border-radius:10px; font-weight:600; }
@@ -694,8 +675,8 @@
 
     /* Idea cards */
     .ideas-list { display:flex; flex-direction:column; gap:.75rem; }
-    .idea-item { display:flex; gap:12px; align-items:flex-start; padding:12px; border-radius:12px; border:1px solid var(--border-color); background:var(--card-bg); box-shadow:var(--shadow-1); transition:transform .12s ease, box-shadow .12s ease; }
-    .idea-item:hover { transform:translateY(-4px); box-shadow:var(--shadow-2); }
+    .idea-item { display:flex; gap:12px; align-items:flex-start; padding:12px; border-radius:12px; border:1px solid var(--border-color); background:var(--card-bg); box-shadow:var(--shadow-1); transition:box-shadow .12s ease; }
+    .idea-item:hover { box-shadow:var(--shadow-2); }
     .idea-title { font-weight:700; margin-bottom:6px; }
     .idea-text { margin-bottom:6px; color:var(--text-color); }
     .idea-details { color:var(--muted); font-size:.95rem; }
@@ -710,13 +691,22 @@
 
     .item-actions { display:flex; gap:6px; align-items:center; }
     .expand-btn, .delete-btn { background:none; border:none; color:var(--muted); cursor:pointer; padding:6px; border-radius:6px; }
+    .edit-btn { background:none; border:none; color:var(--muted); cursor:pointer; padding:6px; border-radius:6px; }
     .expand-btn:hover, .delete-btn:hover { color:var(--danger); }
+    .edit-btn:hover { color:var(--accent); }
 
     .empty-state { text-align:center; color:var(--muted); padding:2.2rem; }
 
     /* Gallery & Database tweaks */
-    .gallery-view .ideas-list { display:grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap:16px; }
-    .gallery-view .idea-item { flex-direction:column; }
+    /* List view: stripped-down simple list */
+    .list-view .idea-item { box-shadow: none; border-radius: 6px; padding: 10px; }
+    .list-view .idea-item:hover { box-shadow: none; transform: none; }
+
+    /* Database table for easy copy/paste into Sheets/Notion */
+    .db-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; }
+    .db-table thead th { text-align: left; padding: 10px 12px; background: var(--card-bg); color: var(--muted); font-weight: 700; font-size: 12px; text-transform: uppercase; }
+    .db-table th, .db-table td { padding: 10px 12px; border-bottom: 1px solid var(--border-color); vertical-align: top; }
+    .db-table tr:hover td { background: color-mix(in srgb, var(--accent) 4%, transparent); }
     .database-view .idea-item { display:table-row; }
     .database-view .idea-item > * { display:table-cell; padding:8px 12px; }
 
@@ -778,13 +768,13 @@
           <option value="reminder">Reminder</option>
         </select>
         <button id="add-btn">Add Item</button>
+        <button id="cancel-btn" class="secondary-btn" style="display:none; margin-left:8px;">Cancel</button>
       </div>
     </div>
 
     <div class="view-controls">
       <span class="filter-label" style="margin-bottom: 0;">View:</span>
       <button class="view-btn active" data-view="list">📋 List</button>
-      <button class="view-btn" data-view="gallery">📸 Gallery</button>
       <button class="view-btn" data-view="database">📊 Database</button>
     </div>
 
@@ -821,6 +811,7 @@
     const detailsInput = document.getElementById('details-input');
     const categorySelect = document.getElementById('category-select');
     const addBtn = document.getElementById('add-btn');
+    const cancelBtn = document.getElementById('cancel-btn');
     const container = document.getElementById('ideas-container');
     const emptyMsg = document.getElementById('empty-msg');
     const copyBtn = document.getElementById('copy-btn');
@@ -833,6 +824,7 @@
     let ideas = JSON.parse(localStorage.getItem('ideas-enhanced-v2') || '[]');
     let activeFilter = 'all';
     let activeView = 'list';
+    let editingIndex = null;
 
     // Theme toggle
     const currentTheme = localStorage.getItem('theme') || 'light';
@@ -888,12 +880,72 @@
 
     function renderIdeas() {
       container.innerHTML = '';
-      container.className = `ideas-list ${activeView}-view`;
+      container.className = `${activeView}-view`;
 
       const filtered = activeFilter === 'all'
         ? ideas
         : ideas.filter(i => i.category === activeFilter);
 
+      // Database view: render an actual <table> for easy copy/paste into Sheets/Notion
+      if (activeView === 'database') {
+        container.className = 'database-view';
+        container.innerHTML = '';
+
+        if (filtered.length === 0) {
+          emptyMsg.style.display = 'block';
+          updateStats();
+          return;
+        }
+
+        const table = document.createElement('table');
+        table.className = 'db-table';
+        table.innerHTML = `
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Details</th>
+              <th>Category</th>
+              <th>Date</th>
+              <th>Completed</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+        `;
+
+        const tbody = document.createElement('tbody');
+
+        filtered.forEach((idea) => {
+          const realIdx = ideas.indexOf(idea);
+          const tr = document.createElement('tr');
+          const detailsText = escapeHtml(idea.details || idea.text || '');
+          const titleText = escapeHtml(idea.title || '');
+          const catLabel = escapeHtml(idea.category.charAt(0).toUpperCase() + idea.category.slice(1));
+          const dateText = escapeHtml(formatTimestamp(idea.timestamp));
+          const completedText = idea.category === 'task' ? (idea.completed ? 'Yes' : 'No') : '';
+
+          tr.innerHTML = `
+            <td>${titleText}</td>
+            <td>${detailsText}</td>
+            <td>${catLabel}</td>
+            <td>${dateText}</td>
+            <td>${completedText}</td>
+            <td>
+              <button class="edit-btn" onclick="editIdea(${realIdx})" title="Edit">✎</button>
+              <button class="delete-btn" onclick="deleteIdea(${realIdx})" title="Delete">×</button>
+            </td>
+          `;
+
+          tbody.appendChild(tr);
+        });
+
+        table.appendChild(tbody);
+        container.appendChild(table);
+        emptyMsg.style.display = filtered.length === 0 ? 'block' : 'none';
+        updateStats();
+        return;
+      }
+
+      // Default to simple list view for any non-database view
       filtered.forEach((idea) => {
         const realIdx = ideas.indexOf(idea);
         const div = document.createElement('div');
@@ -902,62 +954,27 @@
         const hasDetails = idea.details && idea.details.trim();
         const catLabel = idea.category.charAt(0).toUpperCase() + idea.category.slice(1);
 
-        if (activeView === 'list') {
-          div.innerHTML = `
-            ${idea.category === 'task' ? `
-              <div class="checkbox-container">
-                <div class="checkbox ${idea.completed ? 'checked' : ''}" onclick="toggleComplete(${realIdx})"></div>
-              </div>
-            ` : ''}
-            <div class="idea-content">
-              <div class="idea-title">${escapeHtml(idea.title)}</div>
-              ${idea.text ? `<div class="idea-text">${escapeHtml(idea.text)}</div>` : ''}
-              ${hasDetails ? `<div class="idea-details ${idea.expanded ? 'show' : ''}">${escapeHtml(idea.details)}</div>` : ''}
-              <div class="idea-meta">
-                <span class="category-badge ${getCategoryBadgeClass(idea.category)}">${catLabel}</span>
-                <span class="timestamp">${formatTimestamp(idea.timestamp)}</span>
-              </div>
+        div.innerHTML = `
+          ${idea.category === 'task' ? `
+            <div class="checkbox-container">
+              <div class="checkbox ${idea.completed ? 'checked' : ''}" onclick="toggleComplete(${realIdx})"></div>
             </div>
-            <div class="item-actions">
-              ${hasDetails ? `<button class="expand-btn" onclick="toggleExpand(${realIdx})" title="Toggle Details">${idea.expanded ? '−' : '+'}</button>` : ''}
-              <button class="delete-btn" onclick="deleteIdea(${realIdx})" title="Delete">×</button>
-            </div>
-          `;
-        } else if (activeView === 'gallery') {
-          div.innerHTML = `
-            <div class="idea-content">
-              <div class="idea-title">${escapeHtml(idea.title)}</div>
-              ${idea.text ? `<div class="idea-text">${escapeHtml(idea.text)}</div>` : ''}
-              ${hasDetails ? `<div class="idea-details ${idea.expanded ? 'show' : ''}">${escapeHtml(idea.details)}</div>` : ''}
-              <div class="idea-meta">
-                <span class="category-badge ${getCategoryBadgeClass(idea.category)}">${catLabel}</span>
-                <span class="timestamp">${formatTimestamp(idea.timestamp)}</span>
-              </div>
-            </div>
-            <div class="item-actions">
-              ${idea.category === 'task' ? `<div class="checkbox ${idea.completed ? 'checked' : ''}" onclick="toggleComplete(${realIdx})" style="margin-right: 8px;"></div>` : ''}
-              ${hasDetails ? `<button class="expand-btn" onclick="toggleExpand(${realIdx})" title="Toggle Details">${idea.expanded ? '−' : '+'}</button>` : ''}
-              <button class="delete-btn" onclick="deleteIdea(${realIdx})" title="Delete">×</button>
-            </div>
-          `;
-        } else if (activeView === 'database') {
-          div.innerHTML = `
-            <div class="idea-content">
-              <div class="idea-title">${escapeHtml(idea.title)}</div>
-              ${idea.text ? `<div class="idea-text">${escapeHtml(idea.text)}</div>` : ''}
-            </div>
-            <div class="idea-details ${idea.expanded ? 'show' : ''}">${hasDetails ? escapeHtml(idea.details) : ''}</div>
+          ` : ''}
+          <div class="idea-content">
+            <div class="idea-title">${escapeHtml(idea.title)}</div>
+            ${idea.text ? `<div class="idea-text">${escapeHtml(idea.text)}</div>` : ''}
+            ${hasDetails ? `<div class="idea-details ${idea.expanded ? 'show' : ''}">${escapeHtml(idea.details)}</div>` : ''}
             <div class="idea-meta">
               <span class="category-badge ${getCategoryBadgeClass(idea.category)}">${catLabel}</span>
               <span class="timestamp">${formatTimestamp(idea.timestamp)}</span>
             </div>
-            <div class="item-actions">
-              ${idea.category === 'task' ? `<div class="checkbox ${idea.completed ? 'checked' : ''}" onclick="toggleComplete(${realIdx})" style="display: inline-block; margin-right: 8px;"></div>` : ''}
-              ${hasDetails ? `<button class="expand-btn" onclick="toggleExpand(${realIdx})" title="Toggle Details">${idea.expanded ? '−' : '+'}</button>` : ''}
-              <button class="delete-btn" onclick="deleteIdea(${realIdx})" title="Delete">×</button>
-            </div>
-          `;
-        }
+          </div>
+          <div class="item-actions">
+            ${hasDetails ? `<button class="expand-btn" onclick="toggleExpand(${realIdx})" title="Toggle Details">${idea.expanded ? '−' : '+'}</button>` : ''}
+            <button class="edit-btn" onclick="editIdea(${realIdx})" title="Edit">✎</button>
+            <button class="delete-btn" onclick="deleteIdea(${realIdx})" title="Delete">×</button>
+          </div>
+        `;
 
         container.appendChild(div);
       });
@@ -990,10 +1007,52 @@
       renderIdeas();
     };
 
+    // Edit existing idea
+    window.editIdea = function(idx) {
+      const idea = ideas[idx];
+      if (!idea) return;
+      editingIndex = idx;
+      titleInput.value = idea.title || '';
+      detailsInput.value = idea.details || idea.text || '';
+      categorySelect.value = idea.category || 'task';
+      detailsSection.classList.add('show');
+      detailsToggle.textContent = '- Hide Details';
+      addBtn.textContent = 'Save Changes';
+      cancelBtn.style.display = 'inline-flex';
+      titleInput.focus();
+    };
+
+    function cancelEdit() {
+      editingIndex = null;
+      titleInput.value = '';
+      detailsInput.value = '';
+      categorySelect.value = 'task';
+      addBtn.textContent = 'Add Item';
+      cancelBtn.style.display = 'none';
+      detailsSection.classList.remove('show');
+      detailsToggle.textContent = '+ Add Details';
+      titleInput.focus();
+    }
+
+    cancelBtn.addEventListener('click', cancelEdit);
+
     function addIdea() {
       const title = titleInput.value.trim();
       const text = detailsInput.value.trim();
-      if (title) {
+      if (!title) return;
+
+      if (editingIndex !== null) {
+        // update existing item
+        const it = ideas[editingIndex];
+        it.title = title;
+        it.text = text || '';
+        it.details = detailsInput.value.trim() || '';
+        it.category = categorySelect.value;
+        // keep original timestamp
+        editingIndex = null;
+        addBtn.textContent = 'Add Item';
+        cancelBtn.style.display = 'none';
+      } else {
         ideas.unshift({
           title,
           text: text || '',
@@ -1003,14 +1062,15 @@
           completed: false,
           expanded: false
         });
-        localStorage.setItem('ideas-enhanced-v2', JSON.stringify(ideas));
-        titleInput.value = '';
-        detailsInput.value = '';
-        detailsSection.classList.remove('show');
-        detailsToggle.textContent = '+ Add Details';
-        titleInput.focus();
-        renderIdeas();
       }
+
+      localStorage.setItem('ideas-enhanced-v2', JSON.stringify(ideas));
+      titleInput.value = '';
+      detailsInput.value = '';
+      detailsSection.classList.remove('show');
+      detailsToggle.textContent = '+ Add Details';
+      titleInput.focus();
+      renderIdeas();
     }
 
     addBtn.addEventListener('click', addIdea);
