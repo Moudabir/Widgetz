@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Idea Capture Widget</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+      background: #f8f8f8;
+      color: #333;
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+    
+    .header {
+      margin-bottom: 2rem;
+    }
+    
+    h1 {
+      font-size: 28px;
+      margin-bottom: 1rem;
+      color: #222;
+    }
+    
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: 12px;
+      margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+      text-align: center;
+    }
+    
+    .stat-number {
+      font-size: 24px;
+      font-weight: 600;
+      color: #222;
+      margin-bottom: 4px;
+    }
+    
+    .stat-label {
+      font-size: 12px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .input-section {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 10px;
+      margin-bottom: 1.5rem;
+    }
+    
+    input[type="text"],
+    select {
+      padding: 12px;
+      font-size: 14px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: white;
+      color: #333;
+      font-family: inherit;
+    }
+    
+    input[type="text"]:focus,
+    select:focus {
+      outline: none;
+      border-color: #0066cc;
+      box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+    }
+    
+    button {
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      background: #0066cc;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 150ms;
+    }
+    
+    button:hover {
+      background: #0052a3;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0, 102, 204, 0.2);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    .secondary-btn {
+      background: white;
+      color: #333;
+      border: 1px solid #ddd;
+    }
+    
+    .secondary-btn:hover {
+      background: #f5f5f5;
+      border-color: #bbb;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .export-controls {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    
+    .export-controls button {
+      padding: 8px 12px;
+      font-size: 12px;
+    }
+    
+    .filter-section {
+      margin-bottom: 2rem;
+    }
+    
+    .filter-label {
+      font-size: 12px;
+      color: #666;
+      display: block;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+    
+    .filter-controls {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    
+    .filter-btn {
+      padding: 8px 14px;
+      font-size: 12px;
+      border: 1px solid #ddd;
+      background: white;
+      color: #333;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 150ms;
+      font-weight: 500;
+    }
+    
+    .filter-btn:hover {
+      border-color: #0066cc;
+      color: #0066cc;
+    }
+    
+    .filter-btn.active {
+      background: #0066cc;
+      border-color: #0066cc;
+      color: white;
+    }
+    
+    .ideas-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .idea-item {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      animation: slideIn 200ms ease-out;
+      transition: all 150ms;
+    }
+    
+    .idea-item:hover {
+      border-color: #ccc;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .idea-content {
+      flex: 1;
+      min-width: 0;
+    }
+    
+    .idea-text {
+      font-size: 14px;
+      color: #222;
+      line-height: 1.6;
+      margin-bottom: 8px;
+      word-wrap: break-word;
+    }
+    
+    .idea-meta {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      font-size: 12px;
+    }
+    
+    .category-badge {
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    
+    .badge-task {
+      background: #e3f2fd;
+      color: #1565c0;
+    }
+    
+    .badge-idea {
+      background: #f3e5f5;
+      color: #6a1b9a;
+    }
+    
+    .badge-note {
+      background: #e0f2f1;
+      color: #00695c;
+    }
+    
+    .badge-reminder {
+      background: #fff3e0;
+      color: #e65100;
+    }
+    
+    .delete-btn {
+      background: none;
+      border: none;
+      color: #999;
+      cursor: pointer;
+      padding: 4px 8px;
+      font-size: 18px;
+      transition: color 150ms;
+      flex-shrink: 0;
+    }
+    
+    .delete-btn:hover {
+      color: #d32f2f;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #999;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Quick Idea Capture</h1>
+      
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-number" id="count-total">0</div>
+          <div class="stat-label">Total</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="count-task">0</div>
+          <div class="stat-label">Tasks</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="count-idea">0</div>
+          <div class="stat-label">Ideas</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="count-note">0</div>
+          <div class="stat-label">Notes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="count-reminder">0</div>
+          <div class="stat-label">Reminders</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="input-section">
+      <input type="text" id="idea-input" placeholder="Add a new item..." />
+      <select id="category-select">
+        <option value="task">Task</option>
+        <option value="idea">Idea</option>
+        <option value="note">Note</option>
+        <option value="reminder">Reminder</option>
+      </select>
+      <button id="add-btn">Add</button>
+    </div>
+    
+    <div class="export-controls">
+      <button class="secondary-btn" id="copy-btn">📋 Copy JSON</button>
+      <button class="secondary-btn" id="csv-btn">📊 Export CSV</button>
+      <button class="secondary-btn" id="clear-btn">🗑️ Clear All</button>
+    </div>
+    
+    <div class="filter-section">
+      <span class="filter-label">Filter by category</span>
+      <div class="filter-controls">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="task">Tasks</button>
+        <button class="filter-btn" data-filter="idea">Ideas</button>
+        <button class="filter-btn" data-filter="note">Notes</button>
+        <button class="filter-btn" data-filter="reminder">Reminders</button>
+      </div>
+    </div>
+    
+    <div id="ideas-container" class="ideas-list"></div>
+    <div id="empty-msg" class="empty-state">No items yet. Add one to get started!</div>
+  </div>
+
+  <script>
+    const input = document.getElementById('idea-input');
+    const categorySelect = document.getElementById('category-select');
+    const addBtn = document.getElementById('add-btn');
+    const container = document.getElementById('ideas-container');
+    const emptyMsg = document.getElementById('empty-msg');
+    const copyBtn = document.getElementById('copy-btn');
+    const csvBtn = document.getElementById('csv-btn');
+    const clearBtn = document.getElementById('clear-btn');
+    
+    let ideas = JSON.parse(localStorage.getItem('ideas-enhanced') || '[]');
+    let activeFilter = 'all';
+    
+    function updateStats() {
+      const total = ideas.length;
+      const byCategory = {
+        task: ideas.filter(i => i.category === 'task').length,
+        idea: ideas.filter(i => i.category === 'idea').length,
+        note: ideas.filter(i => i.category === 'note').length,
+        reminder: ideas.filter(i => i.category === 'reminder').length
+      };
+      
+      document.getElementById('count-total').textContent = total;
+      document.getElementById('count-task').textContent = byCategory.task;
+      document.getElementById('count-idea').textContent = byCategory.idea;
+      document.getElementById('count-note').textContent = byCategory.note;
+      document.getElementById('count-reminder').textContent = byCategory.reminder;
+    }
+    
+    function getCategoryBadgeClass(cat) {
+      const map = {
+        task: 'badge-task',
+        idea: 'badge-idea',
+        note: 'badge-note',
+        reminder: 'badge-reminder'
+      };
+      return map[cat] || 'badge-idea';
+    }
+    
+    function renderIdeas() {
+      container.innerHTML = '';
+      const filtered = activeFilter === 'all'
+        ? ideas
+        : ideas.filter(i => i.category === activeFilter);
+      
+      filtered.forEach((idea) => {
+        const realIdx = ideas.indexOf(idea);
+        const div = document.createElement('div');
+        div.className = 'idea-item';
+        const catLabel = idea.category.charAt(0).toUpperCase() + idea.category.slice(1);
+        
+        div.innerHTML = `
+          <div class="idea-content">
+            <div class="idea-text">${escapeHtml(idea.text)}</div>
+            <div class="idea-meta">
+              <span class="category-badge ${getCategoryBadgeClass(idea.category)}">${catLabel}</span>
+              <span style="color: #999; font-size: 11px;">${new Date(idea.timestamp).toLocaleDateString()}</span>
+            </div>
+          </div>
+          <button class="delete-btn" onclick="deleteIdea(${realIdx})" title="Delete">×</button>
+        `;
+        
+        container.appendChild(div);
+      });
+      
+      emptyMsg.style.display = filtered.length === 0 ? 'block' : 'none';
+      updateStats();
+    }
+    
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    
+    window.deleteIdea = function(idx) {
+      ideas.splice(idx, 1);
+      localStorage.setItem('ideas-enhanced', JSON.stringify(ideas));
+      renderIdeas();
+    };
+    
+    function addIdea() {
+      const text = input.value.trim();
+      if (text) {
+        ideas.unshift({
+          text,
+          category: categorySelect.value,
+          timestamp: new Date().toISOString()
+        });
+        localStorage.setItem('ideas-enhanced', JSON.stringify(ideas));
+        input.value = '';
+        input.focus();
+        renderIdeas();
+      }
+    }
+    
+    addBtn.addEventListener('click', addIdea);
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') addIdea();
+    });
+    
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeFilter = btn.dataset.filter;
+        renderIdeas();
+      });
+    });
+    
+    copyBtn.addEventListener('click', () => {
+      const json = JSON.stringify(ideas, null, 2);
+      navigator.clipboard.writeText(json).then(() => {
+        const originalText = copyBtn.textContent;
+        copyBtn.textContent = '✓ Copied!';
+        setTimeout(() => {
+          copyBtn.textContent = originalText;
+        }, 2000);
+      }).catch(() => {
+        alert('Failed to copy. Check browser permissions.');
+      });
+    });
+    
+    csvBtn.addEventListener('click', () => {
+      const headers = 'Text,Category,Date\n';
+      const rows = ideas.map(i => {
+        const text = i.text.replace(/"/g, '""');
+        const date = new Date(i.timestamp).toLocaleDateString();
+        return `"${text}","${i.category}","${date}"`;
+      }).join('\n');
+      
+      const csv = headers + rows;
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      
+      link.setAttribute('href', url);
+      link.setAttribute('download', `ideas-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+    
+    clearBtn.addEventListener('click', () => {
+      if (ideas.length === 0) {
+        alert('No ideas to clear!');
+        return;
+      }
+      if (confirm(`Delete all ${ideas.length} items? This cannot be undone.`)) {
+        ideas = [];
+        localStorage.setItem('ideas-enhanced', JSON.stringify(ideas));
+        renderIdeas();
+      }
+    });
+    
+    renderIdeas();
+  </script>
+</body>
+</html>
